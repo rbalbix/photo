@@ -1,0 +1,38 @@
+{
+  "name": "photo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node ./src/index.js"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  },
+  "repository": "https://rbalbi@bitbucket.org/rbalbi/photo.git",
+  "author": "Ricardo Balbi <rbalbi@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "exif-parser": "^0.1.12",
+    "moment": "^2.24.0",
+    "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.4",
+    "@commitlint/config-conventional": "^8.3.4",
+    "commitizen": "4.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "husky": "^4.0.1",
+    "init": "0.1.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
