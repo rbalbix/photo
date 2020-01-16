@@ -2,6 +2,7 @@ const readlineSync = require('readline-sync');
 const fs = require('fs');
 const exif = require('exif-parser');
 const moment = require('moment');
+const log4js = require('log4js');
 
 /*
 
@@ -14,7 +15,10 @@ steps:
 
 */
 
+const logger = log4js.getLogger();
+
 function askFolderToReadPhotos() {
+  logger.error('Erro');
   return readlineSync.question('Pasta para organizar as fotos: ');
 }
 
