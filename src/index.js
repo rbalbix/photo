@@ -16,10 +16,16 @@ steps:
 */
 
 const logger = log4js.getLogger();
+logger.level = 'debug';
 
 function askFolderToReadPhotos() {
-  logger.error('Erro');
-  return readlineSync.question('Pasta para organizar as fotos: ');
+  const question = 'Pasta para organizar as fotos: ';
+  let answer = readlineSync.question(question);
+  while (!fs.existsSync(answer)) {
+    logger.error('Esta pasta não existe. Informe outra.');
+    answer = readlineSync.question(question);
+  }
+  return answer;
 }
 
 function readFolder(path) {
@@ -67,9 +73,9 @@ function start() {
   // ask for folder
   const path = askFolderToReadPhotos();
   // read all photo files
-  const files = readFolder(path);
+  // const files = readFolder(path);
   // read the properties of each file
-  organizePhotos(path, files);
+  // organizePhotos(path, files);
   // read the creation date
   // create folder MM/YYYY
   // move correspondent photos
