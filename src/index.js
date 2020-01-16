@@ -44,8 +44,12 @@ function parseFile(fullPath) {
   return parser;
 }
 
-function createDir(parser, path) {
-  const pathToCreate = `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`;
+function createDir(parser, path, fullPath) {
+  logger.debug(parser.parse().tags.DateTimeOriginal);
+  const pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
+    ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
+    : `${path}/${moment(fs.statSync(fullPath).mtime).format('YYYY')}/${moment(fs.statSync(fullPath).mtime).format('MM')}`;
+
   if (!fs.existsSync(pathToCreate)) {
     fs.mkdirSync(pathToCreate, { recursive: true });
   }
@@ -60,7 +64,7 @@ function organizePhotos(path, files) {
       const parser = parseFile(fullPath);
 
       // createDir(path)
-      const pathToCreate = createDir(parser, path);
+      const pathToCreate = createDir(parser, path, fullPath);
 
       // moveFile
       fs.renameSync(fullPath, `${pathToCreate}\\${file}`);
@@ -73,9 +77,9 @@ function start() {
   // ask for folder
   const path = askFolderToReadPhotos();
   // read all photo files
-  // const files = readFolder(path);
+  const files = readFolder(path);
   // read the properties of each file
-  // organizePhotos(path, files);
+  organizePhotos(path, files);
   // read the creation date
   // create folder MM/YYYY
   // move correspondent photos
