@@ -4,6 +4,9 @@ const exif = require('exif-parser');
 const moment = require('moment');
 const log4js = require('log4js');
 
+const logger = log4js.getLogger();
+logger.level = 'debug';
+
 /*
 
 App to organize photos in an folder
@@ -15,21 +18,19 @@ steps:
 
 */
 
-const logger = log4js.getLogger();
-logger.level = 'debug';
-
 function askFolderToReadPhotos() {
   const question = 'Pasta para organizar as fotos: ';
-  let answer = readlineSync.question(question);
-  while (!fs.existsSync(answer)) {
+  let path = readlineSync.question(question, { encoding: 'utf8' });
+  while (!fs.existsSync(path)) {
+    logger.warn(path.toString('utf8'));
     logger.error('Esta pasta não existe. Informe outra.');
-    answer = readlineSync.question(question);
+    path = readlineSync.question(question);
   }
-  return answer;
+  return path;
 }
 
 function readFolder(path) {
-  return fs.readdirSync(path);
+  return fs.readdirSync(path, 'utf-8');
 }
 
 function parseFile(fullPath) {
@@ -41,11 +42,12 @@ function parseFile(fullPath) {
   parser.enableReturnTags(true);
   parser.enableSimpleValues(true);
   parser.enableTagNames(true);
+
+
   return parser;
 }
 
 function createDir(parser, path, fullPath) {
-  logger.debug(parser.parse().tags.DateTimeOriginal);
   const pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
     ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
     : `${path}/${moment(fs.statSync(fullPath).mtime).format('YYYY')}/${moment(fs.statSync(fullPath).mtime).format('MM')}`;
@@ -62,7 +64,7 @@ function organizePhotos(path, files) {
     if (fs.lstatSync(fullPath).isFile()) {
       // parseFile(fullPath)
       const parser = parseFile(fullPath);
-
+      logger.debug(parser);
       // createDir(path)
       const pathToCreate = createDir(parser, path, fullPath);
 
@@ -78,11 +80,9 @@ function start() {
   const path = askFolderToReadPhotos();
   // read all photo files
   const files = readFolder(path);
+  logger.debug(files);
   // read the properties of each file
-  organizePhotos(path, files);
-  // read the creation date
-  // create folder MM/YYYY
-  // move correspondent photos
+  // organizePhotos(path, files);
 }
 
 start();

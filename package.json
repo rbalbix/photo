@@ -16,8 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "exif-parser": "^0.1.12",
+    "ffmetadata": "^1.6.0",
     "log4js": "^6.1.0",
     "moment": "^2.24.0",
+    "node-dir": "^0.1.17",
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
