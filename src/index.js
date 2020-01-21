@@ -48,7 +48,7 @@ function parseFile(fullPath) {
 function createDir(parser, path, file) {
   let pathToCreate;
   if (parser == null) {
-    pathToCreate = `${path}/${moment(fs.statSync(file).mtime).format('YYYY')}/${moment(fs.statSync(file).mtime).format('MM')}`;
+    pathToCreate = `${path}/${moment(fs.statSync(file).birthtime).format('YYYY')}/${moment(fs.statSync(file).birthtime).format('MM')}`;
   } else {
     pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
       ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
