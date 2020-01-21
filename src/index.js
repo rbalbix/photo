@@ -1,5 +1,7 @@
 const readlineSync = require('readline-sync');
 const fs = require('fs');
+const dir = require('node-dir');
+const isImage = require('is-image');
 const exif = require('exif-parser');
 const moment = require('moment');
 const log4js = require('log4js');
@@ -29,10 +31,6 @@ function askFolderToReadPhotos() {
   return path;
 }
 
-function readFolder(path) {
-  return fs.readdirSync(path, 'utf-8');
-}
-
 function parseFile(fullPath) {
   const buffer = fs.readFileSync(fullPath);
   const parser = exif.create(buffer);
@@ -60,16 +58,20 @@ function createDir(parser, path, fullPath) {
 
 function organizePhotos(path, files) {
   files.forEach((file) => {
+    logger.debug(`${file}`);
     const fullPath = `${path}\\${file}`;
-    if (fs.lstatSync(fullPath).isFile()) {
+    if (fs.lstatSync(file).isFile()) {
+      if (isImage(file)) { // VERIFY IMAGE. IF NOT, USE SO DATE
       // parseFile(fullPath)
-      const parser = parseFile(fullPath);
-      logger.debug(parser);
-      // createDir(path)
-      const pathToCreate = createDir(parser, path, fullPath);
+        const parser = parseFile(file);
+        logger.debug(parser.flags);
+        logger.debug(parser);
+        // createDir(path)
+        // const pathToCreate = createDir(parser, path, fullPath);
 
       // moveFile
-      fs.renameSync(fullPath, `${pathToCreate}\\${file}`);
+      // fs.renameSync(fullPath, `${pathToCreate}\\${file}`);
+      }
     }
   });
 }
@@ -79,8 +81,12 @@ function start() {
   // ask for folder
   const path = askFolderToReadPhotos();
   // read all photo files
-  const files = readFolder(path);
-  logger.debug(files);
+  dir.promiseFiles(path)
+    .then((files) => {
+      // read the properties of each file
+      organizePhotos(path, files);
+    })
+    .catch((e) => logger.error(e));
   // read the properties of each file
   // organizePhotos(path, files);
 }
