@@ -45,10 +45,15 @@ function parseFile(fullPath) {
   return parser;
 }
 
-function createDir(parser, path, fullPath) {
-  const pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
-    ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
-    : `${path}/${moment(fs.statSync(fullPath).mtime).format('YYYY')}/${moment(fs.statSync(fullPath).mtime).format('MM')}`;
+function createDir(parser, path, file) {
+  let pathToCreate;
+  if (parser == null) {
+    pathToCreate = `${path}/${moment(fs.statSync(file).mtime).format('YYYY')}/${moment(fs.statSync(file).mtime).format('MM')}`;
+  } else {
+    pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
+      ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
+      : `${path}/${moment(fs.statSync(file).mtime).format('YYYY')}/${moment(fs.statSync(file).mtime).format('MM')}`;
+  }
 
   if (!fs.existsSync(pathToCreate)) {
     fs.mkdirSync(pathToCreate, { recursive: true });
@@ -57,21 +62,18 @@ function createDir(parser, path, fullPath) {
 }
 
 function organizePhotos(path, files) {
+  let pathToCreate;
   files.forEach((file) => {
-    logger.debug(`${file}`);
-    const fullPath = `${path}\\${file}`;
     if (fs.lstatSync(file).isFile()) {
       if (isImage(file)) { // VERIFY IMAGE. IF NOT, USE SO DATE
-      // parseFile(fullPath)
         const parser = parseFile(file);
-        logger.debug(parser.flags);
-        logger.debug(parser);
         // createDir(path)
-        // const pathToCreate = createDir(parser, path, fullPath);
-
-      // moveFile
-      // fs.renameSync(fullPath, `${pathToCreate}\\${file}`);
+        pathToCreate = createDir(parser, path, file);
+      } else {
+        pathToCreate = createDir(null, path, file);
       }
+      // moveFile
+      fs.renameSync(file, `${pathToCreate}\\${file.split('\\').pop()}`);
     }
   });
 }
