@@ -18,6 +18,10 @@ steps:
 . Find the photo properties (date)
 . Separate the photos by folder on a MM/YYYY format
 
+TODO:
+. Simplify read of a file date creation
+. Test with image that there is no exif metadata
+
 */
 
 function askFolderToReadPhotos() {
@@ -41,14 +45,13 @@ function parseFile(fullPath) {
   parser.enableSimpleValues(true);
   parser.enableTagNames(true);
 
-
   return parser;
 }
 
 function createDir(parser, path, file) {
   let pathToCreate;
   if (parser == null) {
-    pathToCreate = `${path}/${moment(fs.statSync(file).birthtime).format('YYYY')}/${moment(fs.statSync(file).birthtime).format('MM')}`;
+    pathToCreate = `${path}/${moment(fs.statSync(file).mtime).format('YYYY')}/${moment(fs.statSync(file).mtime).format('MM')}`;
   } else {
     pathToCreate = (parser.parse().tags.DateTimeOriginal !== undefined)
       ? `${path}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('YYYY')}/${moment.unix(parser.parse().tags.DateTimeOriginal).format('MM')}`
@@ -65,7 +68,7 @@ function organizePhotos(path, files) {
   let pathToCreate;
   files.forEach((file) => {
     if (fs.lstatSync(file).isFile()) {
-      if (isImage(file)) { // VERIFY IMAGE. IF NOT, USE SO DATE
+      if (isImage(file)) {
         const parser = parseFile(file);
         // createDir(path)
         pathToCreate = createDir(parser, path, file);
