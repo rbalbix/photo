@@ -18,10 +18,6 @@ steps:
 . Find the photo properties (date)
 . Separate the photos by folder on a MM/YYYY format
 
-TODO:
-. Simplify read of a file date creation
-. Test with image that there is no exif metadata
-
 */
 
 function askFolderToReadPhotos() {
