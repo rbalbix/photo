@@ -72,7 +72,7 @@ function organizePhotos(path, files) {
         pathToCreate = createDir(null, path, file);
       }
       // moveFile
-      fs.renameSync(file, `${pathToCreate}\\${file.split('\\').pop()}`);
+      fs.renameSync(file, `${pathToCreate}/${file.split('/').pop()}`);
     }
   });
 }
