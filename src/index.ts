@@ -1,11 +1,12 @@
-const readlineSync = require('readline-sync');
-const fs = require('fs');
-const pathLib = require('path');
-const dir = require('node-dir');
-const isImage = require('is-image');
-const exif = require('exif-parser');
-const moment = require('moment');
-const log4js = require('log4js');
+import readlineSync from 'readline-sync';
+import fs from 'fs';
+import pathLib from 'path';
+import dir from 'node-dir';
+import isImage from 'is-image';
+import { ExifParserFactory } from 'ts-exif-parser';
+import moment from 'moment';
+import log4js from 'log4js';
+import { ExifParser } from 'ts-exif-parser/lib/ExifParser';
 
 const logger = log4js.getLogger();
 logger.level = 'debug';
@@ -25,16 +26,17 @@ function askFolderToReadPhotos() {
   const question = 'Pasta para organizar as fotos: ';
   let path = readlineSync.question(question, { encoding: 'utf8' });
   while (!fs.existsSync(path)) {
-    logger.warn(path.toString('utf8'));
+    logger.warn(path.toString());
     logger.error('Esta pasta não existe. Informe outra.');
     path = readlineSync.question(question);
   }
   return path;
 }
 
-function parseFile(fullPath) {
+function tsParseFile(fullPath: string) {
   const buffer = fs.readFileSync(fullPath);
-  const parser = exif.create(buffer);
+  const parser = ExifParserFactory.create(buffer);
+
   parser.enableBinaryFields(true);
   parser.enablePointers(true);
   parser.enableImageSize(true);
@@ -45,7 +47,7 @@ function parseFile(fullPath) {
   return parser;
 }
 
-function createDir(parser, path, file) {
+function createDir(path: string, file: string, parser?: ExifParser) {
   let pathToCreate;
   if (parser == null) {
     pathToCreate = `${path}/${moment(fs.statSync(file).mtime).format(
@@ -53,11 +55,11 @@ function createDir(parser, path, file) {
     )}/${moment(fs.statSync(file).mtime).format('MM')}`;
   } else {
     pathToCreate =
-      parser.parse().tags.DateTimeOriginal !== undefined
+      parser.parse() !== undefined
         ? `${path}/${moment
-            .unix(parser.parse().tags.DateTimeOriginal)
+            .unix(Number(parser.parse().tags!.DateTimeOriginal))
             .format('YYYY')}/${moment
-            .unix(parser.parse().tags.DateTimeOriginal)
+            .unix(Number(parser.parse().tags!.DateTimeOriginal))
             .format('MM')}`
         : `${path}/${moment(fs.statSync(file).mtime).format('YYYY')}/${moment(
             fs.statSync(file).mtime
@@ -70,19 +72,16 @@ function createDir(parser, path, file) {
   return pathToCreate;
 }
 
-// function deleteJunkFiles(path, files) {
-function deleteJunkFiles(path) {
+function deleteJunkFiles(path: string) {
   try {
     const files = dir.files(path, { sync: true });
     files.forEach((file) => {
-      // logger.debug(file);
       if (
         ['.plist', '.heic', '.aae', '.thm', '.lrv'].includes(
           pathLib.extname(file).toLowerCase()
         )
       ) {
         fs.unlinkSync(file);
-        //file removed
       }
     });
   } catch (err) {
@@ -90,42 +89,25 @@ function deleteJunkFiles(path) {
   }
 }
 
-// function organizePhotos(path, files) {
-function organizePhotos(path) {
+function organizePhotos(path: string) {
   let pathToCreate;
   const files = dir.files(path, { sync: true });
   files.forEach((file) => {
     if (fs.lstatSync(file).isFile()) {
       if (isImage(file)) {
-        const parser = parseFile(file);
-        // createDir(path)
-        pathToCreate = createDir(parser, path, file);
+        const parser = tsParseFile(file);
+        pathToCreate = createDir(path, file, parser);
       } else {
-        pathToCreate = createDir(null, path, file);
+        pathToCreate = createDir(path, file);
       }
-      // moveFile
       fs.renameSync(file, `${pathToCreate}/${file.split('/').pop()}`);
     }
   });
 }
 
-// main function
 function start() {
   // ask for folder
   const path = askFolderToReadPhotos();
-  // read all photo files
-  // dir
-  //   .promiseFiles(path)
-  //   .then((files) => {
-  //     // delete junk files
-  //     // [.plist, .heic, .aae, .thm, .lrv]
-  //     deleteJunkFiles(path, files);
-  //     // read the properties of each file
-  //     organizePhotos(path, files);
-  //   })
-  //   .catch((e) => logger.error(e));
-  // // read the properties of each file
-  // // organizePhotos(path, files);
 
   deleteJunkFiles(path);
   organizePhotos(path);

@@ -5,6 +5,8 @@
   "bin": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
+    "dev:ts": "ts-node-dev --respawn --transpileOnly src/index.ts",
+    "dev:build": "yarn tsc && node dist/index.js",
     "start": "nodemon src/index.js"
   },
   "husky": {
@@ -17,24 +19,29 @@
   "author": "Ricardo Balbi <rbalbi@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "exif-parser": "^0.1.12",
     "ffmetadata": "^1.6.0",
     "is-image": "^3.0.0",
     "log4js": "^6.1.0",
     "moment": "^2.24.0",
     "node-dir": "^0.1.17",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "ts-exif-parser": "^0.1.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.4",
     "@commitlint/config-conventional": "^8.3.4",
+    "@types/node": "^14.0.1",
+    "@types/node-dir": "^0.0.33",
+    "@types/readline-sync": "^1.4.3",
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
     "husky": "^4.0.1",
-    "init": "0.1.2"
+    "init": "0.1.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.9.2"
   },
   "config": {
     "commitizen": {
