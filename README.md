@@ -33,6 +33,7 @@ This project was developed with the following technologies:
 
 - [Node.js](https://nodejs.org/en/)
 - [Typescript](https://www.typescriptlang.org/)
+- [PKG](https://github.com/vercel/pkg)
 
 ## Project
 
@@ -42,6 +43,11 @@ Photo Organizer is a tiny app that helps people to organize automatically photos
 
 This project is under the MIT license.
 
+---
+
+<p>
+  To create an executable, use vercel pkg app.
+</p>
 </br>
 
 ---
