@@ -77,7 +77,8 @@ function deleteJunkFiles(path: string) {
     const files = dir.files(path, { sync: true });
     files.forEach((file) => {
       if (
-        ['.plist', '.heic', '.aae', '.thm', '.lrv'].includes(
+        // ['.plist', '.heic', '.aae', '.thm', '.lrv'].includes(
+        ['.plist', '.aae', '.thm', '.lrv'].includes(
           pathLib.extname(file).toLowerCase()
         )
       ) {

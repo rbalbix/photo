@@ -68,7 +68,9 @@ function deleteJunkFiles(path) {
     try {
         var files = node_dir_1.default.files(path, { sync: true });
         files.forEach(function (file) {
-            if (['.plist', '.heic', '.aae', '.thm', '.lrv'].includes(path_1.default.extname(file).toLowerCase())) {
+            if (
+            // ['.plist', '.heic', '.aae', '.thm', '.lrv'].includes(
+            ['.plist', '.aae', '.thm', '.lrv'].includes(path_1.default.extname(file).toLowerCase())) {
                 fs_1.default.unlinkSync(file);
             }
         });
