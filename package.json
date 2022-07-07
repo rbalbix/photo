@@ -22,7 +22,7 @@
     "ffmetadata": "^1.6.0",
     "is-image": "^3.0.0",
     "log4js": "^6.1.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-dir": "^0.1.17",
     "readline-sync": "^1.4.10",
     "ts-exif-parser": "^0.1.6"
